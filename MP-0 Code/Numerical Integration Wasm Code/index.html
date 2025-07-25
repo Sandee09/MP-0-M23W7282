@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WASM Integration</title>
+</head>
+<body>
+  <h1>WASM Integration using Trapezoidal Rule</h1>
+  <h2>Open console to see output</h2>
+
+  <script>
+    // Load and run WASM
+    fetch("integration.wasm").then(r => r.arrayBuffer()).then(bytes =>
+      WebAssembly.instantiate(bytes)
+    ).then(mod => {
+      const { integrate } = mod.instance.exports;
+
+      const t0 = performance.now();
+      const result = integrate(0, 1, 1e7); // Integrate f(x) = 1 / (1 + x^2)
+      const t1 = performance.now();
+
+      console.log("WASM Integration Result:", result.toFixed(6));
+      console.log("WASM Integration Time:", (t1 - t0).toFixed(2), "ms");
+    });
+
+    // Measure and display page load time
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const navEntry = performance.getEntriesByType("navigation")[0];
+        if (navEntry && navEntry.loadEventEnd > 0) {
+          console.log("Page Load Time:", navEntry.loadEventEnd.toFixed(2), "ms");
+        } else if (performance.timing) {
+          const t = performance.timing;
+          const loadTime = t.loadEventEnd - t.navigationStart;
+          if (loadTime > 0) {
+            console.log("Page Load Time:", loadTime + " ms");
+          } else {
+            console.warn("Could not measure page load time.");
+          }
+        }
+      }, 100); // Delay ensures values are populated
+    });
+  </script>
+</body>
+</html>

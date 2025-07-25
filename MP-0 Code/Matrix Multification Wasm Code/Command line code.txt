@@ -1,0 +1,5 @@
+emcc matrix_mul.cpp -o matrix_mul.js \
+  -sEXPORTED_FUNCTIONS=_multiplyMatrix,_malloc,_free \
+  -sEXPORTED_RUNTIME_METHODS=ccall,cwrap \
+  -O3 -sALLOW_MEMORY_GROWTH=1
+

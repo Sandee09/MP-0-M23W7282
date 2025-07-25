@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Numerical Integration Benchmark</title>
+</head>
+<body>
+  <h2>Open Console to See Integration Output</h2>
+
+  <script>
+    // Function to integrate
+    function f(x) {
+      return 1.0 / (1 + x * x);  // ∫0→1 1/(1+x²) dx ≈ arctangent(1) = π/4 ≈ 0.785398
+    }
+
+    // Trapezoidal integration
+    function integrateTrapezoidal(a, b, n) {n
+      const h = (b - a) / n;
+      let sum = 0.5 * (f(a) + f(b));
+      for (let i = 1; i < n; i++) {
+        sum += f(a + i * h);
+      }
+      return sum * h;
+    }
+
+    const A = 0;
+    const B = 1;
+    const SUBDIVISIONS = 1e7;         // More subdivisions = more accurate
+    const REPETITIONS = 10;           // Run multiple times to increase JS time
+
+    let total = 0;
+    const t0 = performance.now();
+
+    for (let i = 0; i < REPETITIONS; i++) {
+      total = integrateTrapezoidal(A, B, SUBDIVISIONS);
+    }
+
+    const t1 = performance.now();
+    const totalTime = t1 - t0;
+    const avgTime = totalTime / REPETITIONS;
+
+    console.log(`Integration Result: ${total.toFixed(8)}`);
+    console.log(`Total JS Integration Time (${REPETITIONS} runs): ${totalTime.toFixed(2)} ms`);
+    console.log(`Average JS Integration Time: ${avgTime.toFixed(2)} ms`);
+
+  
+
+    // Page load time logging
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const navEntry = performance.getEntriesByType("navigation")[0];
+        if (navEntry && navEntry.loadEventEnd > 0) {
+          console.log("Page Load Time:", navEntry.loadEventEnd.toFixed(2), "ms");
+        } else if (performance.timing) {
+          const timing = performance.timing;
+          const loadTime = timing.loadEventEnd - timing.navigationStart;
+          if (loadTime > 0) {
+            console.log("Page Load Time:", loadTime + " ms");
+          } else {
+            console.warn("Error");
+          }
+        }
+      }, 100);
+    });
+  </script>
+</body>
+</html>
+

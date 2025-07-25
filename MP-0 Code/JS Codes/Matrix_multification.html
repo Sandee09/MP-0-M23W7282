@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Matrix Multiplication</title>
+</head>
+<body>
+  <h1>Matrix Multiplication</h1>
+  <h2>Open console to see output</h2>
+
+  <script>
+    // Generate a matrix
+    function generateMatrix(size) {
+      const matrix = new Array(size);
+      for (let i = 0; i < size; i++) {
+        matrix[i] = new Float64Array(size);
+        for (let j = 0; j < size; j++) {
+          matrix[i][j] = Math.random();
+        }
+      }
+      return matrix;
+    }
+
+    // Multiply matrices
+    function multiplyMatrix(A, B, size) {
+      const C = new Array(size);
+      for (let i = 0; i < size; i++) {
+        C[i] = new Float64Array(size);
+        for (let j = 0; j < size; j++) {
+          let sum = 0;
+          for (let k = 0; k < size; k++) {
+            sum += A[i][k] * B[k][j];
+          }
+          C[i][j] = sum;
+        }
+      }
+      return C;
+    }
+
+    // Measure matrix multiplication
+    const SIZE = 500;
+    const A = generateMatrix(SIZE);
+    const B = generateMatrix(SIZE);
+
+    const matStart = performance.now();
+    const C = multiplyMatrix(A, B, SIZE);
+    const matEnd = performance.now();
+
+    console.log("Matrix Multiplication Time:", (matEnd - matStart).toFixed(2), "ms");
+
+    // Measure page load time with fallback and delay
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const navEntry = performance.getEntriesByType("navigation")[0];
+        if (navEntry && navEntry.loadEventEnd > 0) {
+          console.log("Page Load Time:", navEntry.loadEventEnd.toFixed(2), "ms");
+        } else {
+          const timing = performance.timing;
+          const loadTime = timing.loadEventEnd - timing.navigationStart;
+          if (loadTime > 0) {
+            console.log("Page Load Time:", loadTime + " ms");
+          } else {
+            console.warn("Error");
+          }
+        }
+      }, 100); // Wait 100ms after load event
+    });
+  </script>
+</body>
+</html>

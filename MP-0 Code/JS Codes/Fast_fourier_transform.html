@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fast Fourier Transform Benchmark</title>
+</head>
+<body>
+  <h1>FFT Benchmark</h1>
+  <h2>Open Console to See Results</h2>
+
+  <script>
+    // Dummy FFT function (real-only, recursive)
+    function fft(input) {
+      const N = input.length;
+      if (N <= 1) return input;
+
+      const even = fft(input.filter((_, i) => i % 2 === 0));
+      const odd = fft(input.filter((_, i) => i % 2 !== 0));
+
+      const output = new Array(N);
+      for (let k = 0; k < N / 2; k++) {
+        const angle = -2 * Math.PI * k / N;
+        const t = Math.cos(angle) * odd[k] - Math.sin(angle) * 0; // simulate complex multiply
+        output[k] = even[k] + t;
+        output[k + N / 2] = even[k] - t;
+      }
+      return output;
+    }
+
+    // Run FFT multiple times for significant benchmark
+    const SIZE = 4096; // Balanced for performance
+    const REPETITIONS = 100;
+    const input = Array.from({ length: SIZE }, () => Math.random());
+
+    const fftStart = performance.now();
+    for (let i = 0; i < REPETITIONS; i++) {
+      fft([...input]); // Use copy to avoid mutation optimization
+    }
+    const fftEnd = performance.now();
+
+    const totalTime = fftEnd - fftStart;
+    const avgTime = totalTime / REPETITIONS;
+
+    console.log(`Total FFT Time (${REPETITIONS} runs): ${totalTime.toFixed(2)} ms`);
+    console.log(`Average FFT Time: ${avgTime.toFixed(2)} ms`);
+
+    // Measure JS page load time
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        const navEntry = performance.getEntriesByType("navigation")[0];
+        if (navEntry && navEntry.loadEventEnd > 0) {
+          console.log("Page Load Time (modern):", navEntry.loadEventEnd.toFixed(2), "ms");
+        } else if (performance.timing) {
+          const timing = performance.timing;
+          const loadTime = timing.loadEventEnd - timing.navigationStart;
+          if (loadTime > 0) {
+            console.log("Page Load Time (fallback):", loadTime + " ms");
+          } else {
+            console.warn("Error");
+          }
+        } else {
+          console.warn("Error");
+        }
+      }, 100);
+    });
+  </script>
+</body>
+</html>
